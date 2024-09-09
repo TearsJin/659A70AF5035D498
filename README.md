@@ -1,2 +1,2 @@
-# New-Results-on-Coppersmith-Based-Integer-Factoring-and-Their-Applications
-The code of "New Results on Coppersmith-Based Integer Factoring and Their Applications"
+# New Results and Applications of Integer Factoring Based on Root Finding
+The code of "New Results and Applications of Integer Factoring Based on Root Finding"
