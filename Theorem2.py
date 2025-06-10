@@ -114,12 +114,12 @@ def Theorem2(N,E1,E2,r,beta = None):
             if result != []:
                 return gcd(result[0][0] + (u * inverse_mod(e,N)),N)
 
-gamma = 0.14                     # e = N ^ gamma
-beta = 0.2                       # Q = N ^ beta
-r = 3                            # N = P * Q ^ r
-k = 16                           # The number of prime
-lb = 12                          # bits-length of primes
-Bq = 50                          # bits-length of large prime in P
+gamma = 0.23                    # e = N ^ gamma
+beta = 0.25                       # Q = N ^ beta
+r = 1                            # N = P * Q ^ r
+k = 20                           # The number of prime
+lb = 30                          # bits-length of primes
+Bq = 300                          # bits-length of large prime in P
 
 RR = RealField(2 ** 5)
 P,Q,E1,E2 = Generate(k,lb,Bq,r,beta,gamma)
@@ -129,6 +129,7 @@ gamma = RR(Integer(E1 * E2).nbits() / Integer(N).nbits())
 beta = RR(Integer(Q).nbits() / Integer(N).nbits())
 
 print("[+] beta: {}, gamma: {}".format(beta,gamma))
+print("[+] Theo. low bounds of gamma: {}, {}".format( RR(0.25 / r), RR(beta - r * beta ** 2)))
 Starttime = time.time()
 # print(Theorem2(N,E1,E2,r))
 print(Theorem2(N,E1,E2,r,beta))
