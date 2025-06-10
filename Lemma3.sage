@@ -1,4 +1,13 @@
 from tqdm import tqdm
+from re import findall
+from subprocess import check_output
+def flatter(M):
+    # compile GitHub - keeganryan/flatter: Fast lattice reduction and put it in $PATH
+    z = "[[" + "]\n[".join(" ".join(map(str, row)) for row in M) + "]]"
+    ret = check_output(["flatter"], input=z.encode())
+    return matrix(M.nrows(), M.ncols(), map(int, findall(b"-?\\d+", ret)))
+
+
 
 def find_roots(B,method = 'variety',bound = None,monomials = None,f = None):
     PR.<x> = PolynomialRing(ZZ)
@@ -34,16 +43,18 @@ def Coppersmith(f,u,v,beta,epsilon):
     for k in range(m + 1):
         Poly = g(k)
         ShiftPolys.append(Poly)
-    B, monomials = ShiftPolys.coefficient_matrix()
+    B, monomials = ShiftPolys.coefficients_monomials()
     monomials = vector(monomials)
     nn = len(ShiftPolys)
-    # print("[+] dim:",nn)
+    print("[+] dim:",B.dimensions())
 
     factors = [monomial(*bounds) for monomial in monomials]
     for i,factor in enumerate(factors):
         B.rescale_col(i,factor)
 
-    B = B.dense_matrix().LLL(delta = 0.75)
+    # B = B.dense_matrix().LLL(delta = 0.75)
+    
+    B = flatter(B)
     # print('[+] LLL done')
     B = B.change_ring(QQ)
     for i, factor in enumerate(factors):
