@@ -47,6 +47,7 @@ def Generate(k,lb,Bq,r,beta,gamma):
     print("[+] Bq: {}, Bp: {}".format(Bq,Bp))
     while True:
         Sq = [getPrime(lb - 1) for _ in range(k // 2 - 1)]
+        Sq = [Sq[1]] + Sq[1:]
         a = getPrime(Bq - 1)
         i = 0
         while i < 100:
@@ -118,7 +119,9 @@ def Theorem3(N,E1,E2,r,beta = None):
             x = PR.gens()[0]
             f = x ** r - (ur % (ei[0] ** ei[1]))
             print("[+] ur2:",(ur ,ei[0] , ei[1]))
+            TTTTT = time.time()
             candidateU.append(hensel_lifting(f,derivative(f,x),ei[0],ei[1],U))
+            print(time.time() - TTTTT)
             for _ in candidateU[-1]:
                 print(_,f)
                 print(f(_) % ei[0] ** ei[1])
@@ -152,11 +155,11 @@ def Theorem3(N,E1,E2,r,beta = None):
             if result != []:
                 return gcd(result[0][0] + (u * inverse_mod(e,N)),N)
 
-gamma = 0.16                     # e = N ^ gamma
-beta = 0.2                       # Q = N ^ beta
-r = 3                            # N = P * Q ^ r
-k = 16                           # The number of prime
-lb = 12                          # bits-length of primes
+gamma = 0.18                     # e = N ^ gamma
+beta = 0.333                       # Q = N ^ beta
+r = 2                            # N = P * Q ^ r
+k = 30                           # The number of prime
+lb = 18                          # bits-length of primes
 Bq = 50                          # bits-length of large prime in P
 
 RR = RealField(2 ** 5)
@@ -167,6 +170,7 @@ gamma = RR(Integer(E1 * E2).nbits() / Integer(N).nbits())
 beta = RR(Integer(Q).nbits() / Integer(N).nbits())
 
 print("[+] beta: {}, gamma: {}".format(beta,gamma))
+print("[+] Theo. low bounds of gamma: {}, {}".format( RR(0.25 / r), RR(beta - r * beta ** 2)))
 Starttime = time.time()
 # print(Theorem3(N,E1,E2,r))
 print(Theorem3(N,E1,E2,r,beta))
