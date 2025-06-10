@@ -10,10 +10,11 @@ def Generate(k,lb,Bq,r,beta,gamma):
     Pbits = Nbits - Qbits * r
     Nbits = Qbits * r + Pbits
 
+    print(Nbits * gamma)
     Bp = Pbits - (k // 2 * lb + 2)
     print("[+] Bq: {}, Bp: {}".format(Bq,Bp))
 
-    print(Qbits,Pbits,int(Nbits * gamma))
+    
 
     while True:
         Sq = [getPrime(lb - 1) for _ in range(k // 2 - 1)]
@@ -42,6 +43,7 @@ def Generate(k,lb,Bq,r,beta,gamma):
         if i == 100:
             continue
 
+        print(log(P,2).n(),log(Q,2).n())
         return (P,Q,e)
 
 def Theorem1(N,e,r,beta = None):
@@ -49,7 +51,9 @@ def Theorem1(N,e,r,beta = None):
     PR = PolynomialRing(Zmod(e),"x")
     x = PR.gens()[0]
     f = x ** r - (N % e) 
+    TTT = time.time()
     us = [int(root[0]) for root in f.roots()]
+    print("[+] AMM time :", time.time() - TTT)
 
     PR = PolynomialRing(Zmod(N),"x",1)
     x = PR.gens()[0]
@@ -60,7 +64,6 @@ def Theorem1(N,e,r,beta = None):
             # beta is unknown
             mu = gamma - (1 / (4 * r)) - 0.01
             print("[+] mu:",mu)
-            print(f'[+] gamma - mu > 1 / 4r : {RR(gamma - mu) >= RR(1 / 4 / r)}')
             result = iterationAlgorithm(f,r,gamma,mu)
             if result != []:
                 return list(set([gcd(r + (u * inverse_mod(e,N)) ,N) for r in result]))
@@ -68,17 +71,16 @@ def Theorem1(N,e,r,beta = None):
             # beta is known
             mu = gamma - (beta - r * beta ** 2) - 0.01
             print("[+] mu:",mu)
-            print(f'[+] gamma - mu > (beta - r * beta ** 2) : {RR(gamma - mu) >= RR((beta - r * beta ** 2))}')
             result = Coppersmith(f,r,1,beta,mu)
             if result != []:
                 return gcd(result[0][0] + (u * inverse_mod(e,N)),N)
             
 
-gamma = 0.17                     # e = N ^ gamma
-beta = 0.2                       # Q = N ^ beta
-r = 2                            # N = P * Q ^ r
+gamma = 0.06                     # e = N ^ gamma
+beta = 0.2                      # Q = N ^ beta
+r = 4                             # N = P * Q ^ r
 k = 20                           # The number of prime
-lb = 15                          # bits-length of primes
+lb = 20                          # bits-length of primes
 Bq = 300                         # bits-length of large prime in P
 RR = RealField(2 ** 4)
 P,Q,e = Generate(k,lb,Bq,r,beta,gamma)
@@ -88,6 +90,7 @@ gamma = RR(Integer(e).nbits() / Integer(N).nbits())
 beta = RR(Integer(Q).nbits() / Integer(N).nbits())
 
 print("[+] beta: {}, gamma: {}".format(beta,gamma))
+print("[+] Theo. low bounds of gamma: {}, {}".format( RR(0.25 / r), RR(beta - r * beta ** 2)))
 Starttime = time.time()
 # print(Theorem1(N,e,r))
 print(Theorem1(N,e,r,beta))
